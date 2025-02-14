@@ -145,12 +145,12 @@ void Entity::ensureType(EntityType type) const {
 
 String Entity::stringValue() const {
     ensureType(EntityType::String);
-    return JsonParser::toStringValue(**boost::any_cast<std::shared_ptr<String>>(&value_));
+    return JsonParser::toStringValue(**std::any_cast<std::shared_ptr<String>>(&value_));
 }
 
 String Entity::bytesValue() const {
     ensureType(EntityType::String);
-    return JsonParser::toBytesValue(**boost::any_cast<std::shared_ptr<String>>(&value_));
+    return JsonParser::toBytesValue(**std::any_cast<std::shared_ptr<String>>(&value_));
 }
 
 std::string Entity::toString() const {
@@ -175,6 +175,23 @@ std::string Entity::toString() const {
         c += n;
     }
     return result;
+}
+
+std::string Entity::toLiteralString() const {
+    switch (type_) {
+        case EntityType::Null:
+            return "null";
+        case EntityType::Bool:
+            return boolValue() ? "true" : "false";
+        case EntityType::Long:
+            return std::to_string(longValue());
+        case EntityType::Double:
+            return std::to_string(doubleValue());
+        case EntityType::String:
+            return stringValue();
+        default:
+	    return toString();
+    }
 }
 
 } // namespace json
